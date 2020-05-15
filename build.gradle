@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+}
+
+group 'sso-handshake'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile files('lib/bluecove-2.1.2.jar')
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
