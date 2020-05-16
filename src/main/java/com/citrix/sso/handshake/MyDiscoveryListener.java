@@ -5,10 +5,13 @@ import java.util.ArrayList;
 
 import javax.bluetooth.*;
 import javax.microedition.io.Connector;
+import javax.microedition.io.StreamConnection;
 import javax.obex.ClientSession;
 import javax.obex.HeaderSet;
 import javax.obex.Operation;
 import javax.obex.ResponseCodes;
+
+
 
 public class MyDiscoveryListener implements DiscoveryListener {
 
@@ -49,7 +52,8 @@ public class MyDiscoveryListener implements DiscoveryListener {
 
 
             UUID[] uuidSet = new UUID[1];
-            uuidSet[0]=new UUID(0x1105); //OBEX Object Push service
+            uuidSet[0]=new UUID(0x0003); //OBEX Object Push service
+//            uuidSet[1]=new UUID(0x0003);
 
             int[] attrIDs =  new int[] {
                     0x0100 // Service name
@@ -90,7 +94,9 @@ public class MyDiscoveryListener implements DiscoveryListener {
             name = btDevice.getBluetoothAddress();
         }
 
-        if (name.equalsIgnoreCase("Redmi")) {
+        System.out.println("Test: " + name);
+
+        if (name.equalsIgnoreCase("Pixel 2 XL")) {
             System.out.println("this is my red me device");
             devices.add(btDevice);
             System.out.println("device found: " + name);
@@ -126,7 +132,7 @@ public class MyDiscoveryListener implements DiscoveryListener {
             if (serviceName != null) {
                 System.out.println("service " + serviceName.getValue() + " found " + url);
 
-                if(serviceName.getValue().toString().contains("OBEX Object Push")){
+                if(serviceName.getValue().toString().contains("BluetoothChatInsecure")){
                     sendMessageToDevice(url);
                 }
             } else {
@@ -141,34 +147,38 @@ public class MyDiscoveryListener implements DiscoveryListener {
         try{
             System.out.println("Connecting to " + serverURL);
 
-            ClientSession clientSession = (ClientSession) Connector.open(serverURL);
-            HeaderSet hsConnectReply = clientSession.connect(null);
-            if (hsConnectReply.getResponseCode() != ResponseCodes.OBEX_HTTP_OK) {
-                System.out.println("Failed to connect");
-                return;
-            }
+            StreamConnection connection =  (StreamConnection) Connector.open(serverURL);
 
+            connection.openDataOutputStream().writeBytes("Testing msg");
 
-            HeaderSet hsOperation = clientSession.createHeaderSet();
-            hsOperation.setHeader(HeaderSet.NAME, "Hello.txt");
-            hsOperation.setHeader(HeaderSet.TYPE, "text");
-
-            //Create PUT Operation
-            Operation putOperation = clientSession.put(hsOperation);
-
-            // Send some text to server
-            byte[] data = "Hello World !!!".getBytes(StandardCharsets.UTF_8);
-            OutputStream os = putOperation.openOutputStream();
-            os.write(data);
-            os.close();
-
-            putOperation.close();
-
-            clientSession.disconnect(null);
-
-            clientSession.close();
-
-            System.out.println("Sent the message");
+//            ClientSession clientSession = (ClientSession) Connector.open(serverURL);
+//            HeaderSet hsConnectReply = clientSession.connect(null);
+//            if (hsConnectReply.getResponseCode() != ResponseCodes.OBEX_HTTP_OK) {
+//                System.out.println("Failed to connect");
+//                return;
+//            }
+//
+//
+//            HeaderSet hsOperation = clientSession.createHeaderSet();
+//            hsOperation.setHeader(HeaderSet.NAME, "Hello.txt");
+//            hsOperation.setHeader(HeaderSet.TYPE, "text");
+//
+//            //Create PUT Operation
+//            Operation putOperation = clientSession.put(hsOperation);
+//
+//            // Send some text to server
+//            byte[] data = "Hello World !!!".getBytes(StandardCharsets.UTF_8);
+//            OutputStream os = putOperation.openOutputStream();
+//            os.write(data);
+//            os.close();
+//
+//            putOperation.close();
+//
+//            clientSession.disconnect(null);
+//
+//            clientSession.close();
+//
+//            System.out.println("Sent the message");
         }
         catch (Exception e) {
             System.err.println("failed");
